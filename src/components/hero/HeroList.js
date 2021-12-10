@@ -1,22 +1,29 @@
+import { useMemo } from "react"
 import { getHeroByPublisher } from "../../helpers/getHeroByPublisher"
+import HeroCard from "./HeroCard"
 
 
 const HeroList = ({publisher}) => {
 
+    
+    //const heroes = getHeroByPublisher(publisher)
+    //* Se vuelve a  utlizar el hook memo para ejercicio , ver info principal en hero.js
 
-    const heroes = getHeroByPublisher(publisher)
+    const heroes = useMemo(() => getHeroByPublisher(publisher) , [publisher])
 
     return (
-        <div>
-            <ul>
+        <div className = 'row row-cols-1 row-cols-md-3 g-3 animate__animated animate__slideInUp animate__slow'> 
+        
                 {
                     heroes.map(hero => (
-                        <li key = {hero.id}>
-                            {hero.superhero}
-                        </li>
+                      <HeroCard 
+                      key = {hero.id}
+                      {...hero}
+                      />
+                    
                     ))
                 }
-            </ul>
+            
         </div>
     )
 }
