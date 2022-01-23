@@ -1,93 +1,95 @@
-import { useLocation, useNavigate } from "react-router-dom"
-import { getHeroByName } from "../../helpers/getHeroByName"
-import { useMemo } from "react"
-import { useForm } from "../../hooks/useForm"
-import querySting from "query-string"
-import HeroCard from "../hero/HeroCard"
+import { useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import queryString from 'query-string'
 
-const SearchScreen = () => {
+import { useForm } from '../../hooks/useForm';
+import { getHeroesByName } from '../../selectors/getHeroesByName';
+import { HeroCard } from '../hero/HeroCard';
+
+
+export const SearchScreen = () => {
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const { q = '' } = queryString.parse(location.search);
     
-    const navigate = useNavigate()
-    const location = useLocation()
-    
-    const { q = '' } = querySting.parse(location.search)
+    const [ formValues, handleInputChange ] = useForm({
+        searchText: q,
+    });
 
-    const [values,handleInputChange] = useForm({
-        searchText: q
-    })  
+    const { searchText } = formValues;
 
-    const {searchText} = values
+    const heroesFileted = useMemo( () => getHeroesByName(q), [q] );
+
 
     const handleSearch = (e) => {
-        e.preventDefault()
-        navigate(`?q=${searchText}`)
-        
+
+        e.preventDefault();
+        navigate(`?q=${ searchText }`)
     }
-   
-   const heroesFilter = useMemo(() => getHeroByName(q), [q])
-    
-    
-   
+
+
     return (
-        <div className="container mt-4 overflow-hidden" style={{height: '90vh'}}>
-            <h2>Busquedas</h2>
+        <>
+            <h1>Búsquedas</h1>
             <hr />
 
-            <div className="row">
+            <div className="row mt-4 overflow-hidden" style={{height: '90vh'}}>
+
                 <div className="col-5">
                     <h4>Buscar</h4>
                     <hr />
 
-                    <form 
-                        className="d-flex flex-column"
-                        onSubmit={handleSearch}
-                    >
-                        <input
+                    <form onSubmit={ handleSearch }>
+                        <input 
                             type="text"
-                            placeholder="Buscar heroe"
+                            placeholder="Buscar un héroe"
                             className="form-control"
                             name="searchText"
                             autoComplete="off"
-                            value={searchText}
-                            onChange={handleInputChange}
+                            value={ searchText }
+                            onChange={ handleInputChange }
                         />
 
-                        <button
-                            type="submit"
-                            className="btn btn-outline-primary my-3 btn-flex d-flex">
+
+                        <button 
+                            className="btn btn-outline-primary mt-2"
+                            type="submit">
                             Buscar...
                         </button>
+
                     </form>
+
+
                 </div>
 
-                <div className="col-7 overflow-auto" style={{height: '90vh'}} >
-
+                <div className="col-7 overflow-auto"  style={{height: '75vh'}}>
+                    <h4>Resultados</h4>
+                    <hr />
 
                     {
                         (q === '')
-                        ? <div className="alert alert-info animate__animated  animate__fadeIn">Busque algun heroe</div>
-                        : (heroesFilter.length === 0)
-                            && <div className="alert alert-danger animate__animated  animate__fadeIn">No hay resultados : {q}</div>
+                            ? <div className="alert alert-info animate__animated  animate__fadeIn"> Buscar un héroe </div>
+                            : ( heroesFileted.length === 0 ) 
+                                && <div className="alert alert-danger animate__animated  animate__fadeIn"> No hay resultados: { q } </div>
                     }
 
 
+                    {
+                        heroesFileted.map(hero => (
+                            <HeroCard 
+                                key={ hero.id }
+                                { ...hero }
+                            />
+                        ))
+                    }
 
-                  {
-                      heroesFilter.map(
-                          hero => (
-                              <HeroCard
-                                className='mt-3 mb-3' 
-                                key={hero.id}
-                                {...hero}
-                              />
-                          )
-                      )
-                  }
+
                 </div>
 
             </div>
-        </div>
+
+        </>
     )
 }
-
-export default SearchScreen

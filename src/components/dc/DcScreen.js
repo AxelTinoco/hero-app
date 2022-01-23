@@ -1,12 +1,14 @@
-import HeroList from "../hero/HeroList"
+import { HeroList } from '../hero/HeroList';
 
-const DcScreen = () => {
+
+export const DcScreen = () => {
     return (
-        <div className='container'>
-            <h2>Dc Screen</h2>
-            <HeroList publisher='DC Comics'/>
+        <div>
+            <h1>DCScreen</h1>
+            <hr />
+
+            <HeroList publisher="DC Comics" />
+
         </div>
     )
 }
-
-export default DcScreen
